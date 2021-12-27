@@ -1,0 +1,33 @@
+<idea-plugin>
+    <id>org.example.MoonStringAppenderPlugin</id>
+    <name>String Appender</name>
+    <vendor>fuzhengyin</vendor>
+
+    <description><![CDATA[
+    在Android 中替换字符串到指定strings.xml, 支持javascript 定制<br>
+    ]]></description>
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>org.jetbrains.kotlin</depends>
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="kotlin"
+                         displayName="Extract string to special string.xml"
+                         groupPath="Kotlin"
+                         groupBundle="messages.InspectionsBundle"
+                         groupKey="group.names.probable.bugs"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.fuzhengyin.string_appender.ExtractToSpecialDest"/>
+        <applicationConfigurable parentId="tools" instance="com.fuzhengyin.string_appender.AppSettingsConfigurable"
+                                 id="com.fuzhengyin.string_appender.AppSettingsConfigurable"
+                                 displayName="Extract to Special Xml"/>
+        <applicationService serviceImplementation="com.fuzhengyin.string_appender.AppSettingsState"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+
+</idea-plugin>
