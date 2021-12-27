@@ -16,6 +16,8 @@ getString(R.string.xxxx)
 
 可以通过在设置中指定xml 文件位置和feature id
 
+在Android Studio 的preferences 中导入插件
+
 todo：
 
 1. 通过python 或者javascript 提供自定义字符串键的功能
