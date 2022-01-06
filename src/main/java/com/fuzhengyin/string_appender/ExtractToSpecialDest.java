@@ -1,27 +1,20 @@
 package com.fuzhengyin.string_appender;
 
-import com.intellij.codeInspection.*;
+import com.intellij.codeInspection.LocalQuickFix;
+import com.intellij.codeInspection.ProblemDescriptor;
+import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiStatement;
 import com.intellij.psi.impl.PsiElementFactoryImpl;
-import com.intellij.structuralsearch.impl.matcher.compiler.GlobalCompilingVisitor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.kotlin.idea.debugger.evaluate.KotlinCodeFragmentFactory;
-import org.jetbrains.kotlin.idea.debugger.sequence.trace.dsl.KotlinCollectionsPeekCallFactory;
-import org.jetbrains.kotlin.idea.debugger.sequence.trace.dsl.KotlinStatementFactory;
-import org.jetbrains.kotlin.idea.debugger.stepping.KotlinStepActionFactory;
-import org.jetbrains.kotlin.idea.framework.KotlinTemplatesFactory;
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection;
-import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspectionKt;
-import org.jetbrains.kotlin.idea.quickfix.crossLanguage.KotlinElementActionsFactory;
-import org.jetbrains.kotlin.idea.structuralsearch.visitor.KotlinCompilingVisitor;
+import org.jetbrains.kotlin.psi.KtAnnotationEntry;
+import org.jetbrains.kotlin.psi.KtCallExpression;
 import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry;
 import org.jetbrains.kotlin.psi.KtVisitorVoid;
-import org.jetbrains.kotlin.psi.KtVisitorVoidWithParameter;
 
 import java.io.File;
 
@@ -38,6 +31,19 @@ public class ExtractToSpecialDest extends AbstractKotlinInspection {
             @Override
             public void visitLiteralStringTemplateEntry(@NotNull KtLiteralStringTemplateEntry entry) {
                 super.visitLiteralStringTemplateEntry(entry);
+                var temp = entry.getParent();
+                while (true) {
+                    if (temp != null) {
+                        if (temp instanceof KtAnnotationEntry) {
+                            return;
+                        } else if (temp instanceof KtCallExpression) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                    temp = temp.getParent();
+                }
                 holder.registerProblem(entry, "Please don't hardcode string!", new LocalQuickFix() {
                     @Override
                     public @IntentionFamilyName @NotNull String getFamilyName() {
