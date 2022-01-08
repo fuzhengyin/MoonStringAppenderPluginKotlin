@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.psi.KtCallExpression;
 import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry;
 import org.jetbrains.kotlin.psi.KtVisitorVoid;
 
-import java.io.File;
+import java.io.*;
 
 public class ExtractToSpecialDest extends AbstractKotlinInspection {
     MainViewModel mainViewModel = new MainViewModel();
@@ -24,6 +24,7 @@ public class ExtractToSpecialDest extends AbstractKotlinInspection {
     ExtractToSpecialDest() {
 
     }
+
     @Override
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new KtVisitorVoid() {
@@ -53,27 +54,114 @@ public class ExtractToSpecialDest extends AbstractKotlinInspection {
                     @Override
                     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
                         String text = entry.getText();
-                        String xmlPath = AppSettingsState.getInstance().xmlPath;
-                        String featureId = AppSettingsState.getInstance().featureId;
+                        AppSettingsState instance = AppSettingsState.getInstance();
+                        String xmlPath = instance.xmlPath;
+                        String featureId = getFeatureId(project, instance);
                         if (xmlPath == null || !new File(xmlPath).exists()) {
-                            Messages.showMessageDialog("Can't process","xml "+ xmlPath +" not exists",Messages.getErrorIcon());
+                            Messages.showMessageDialog("Can't process", "xml " + xmlPath + " not exists", Messages.getErrorIcon());
                             return;
                         }
                         if (featureId == null || featureId.trim().isEmpty()) {
-                            Messages.showMessageDialog("Can't process", "FeatureId not Exists",Messages.getErrorIcon());
+                            Messages.showMessageDialog("Can't process", "FeatureId not Exists", Messages.getErrorIcon());
                             return;
                         }
                         mainViewModel.moonDest.setData(xmlPath);
                         mainViewModel.featureId.setData(featureId);
 
-                        mainViewModel.key.setData(text);
-                        String key = mainViewModel.start();
-                        String text1 = "getString(" + key + ")";
-                        PsiStatement statementFromText = new PsiElementFactoryImpl(project).createStatementFromText(text1, entry);
-                        entry.getParent().replace(statementFromText);
+                        String trans = mainViewModel.trans(text);
+                        if (instance.maxWordType == AppSettingsState.max_word_type_word) {
+                            if (instance.maxWord != 0) {
+                                String[] s = trans.split("_");
+                                if (instance.maxWord < s.length) {
+                                    diy(project, text, entry);
+                                    return;
+                                }
+                            }
+
+                        } else {
+                            if (instance.maxLength != 0) {
+                                if (instance.maxLength < trans.length()) {
+                                    diy(project, text, entry);
+                                    return;
+                                }
+                            }
+                        }
+                        work(project, text, entry);
                     }
                 });
             }
         };
+    }
+
+    private String getFeatureId(@NotNull Project project, AppSettingsState instance) {
+        if (instance.featureProduceType == AppSettingsState.feature_id_type_fixed_string) {
+            return instance.featureId;
+        }
+        Process process = null;
+        InputStream inputStream = null;
+        BufferedInputStream bufferedInputStream = null;
+        try {
+            String basePath = project.getBasePath();
+            String pythonPath;
+            if (instance.pythonPath != null && instance.pythonPath.length() > 0) {
+                pythonPath = instance.pythonPath;
+            } else pythonPath = "python";
+            process = Runtime.getRuntime().exec(new String[]{pythonPath, instance.featureScriptPath, basePath});
+            int i = process.waitFor();
+            if (i == 0) {
+                inputStream = process.getInputStream();
+                bufferedInputStream = new BufferedInputStream(inputStream);
+                byte[] bytes = bufferedInputStream.readAllBytes();
+                return new String(bytes).trim();
+            }
+            return instance.featureId;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bufferedInputStream != null) {
+                    bufferedInputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (process != null) {
+                process.destroy();
+            }
+        }
+        return instance.featureId;
+    }
+
+    private void diy(@NotNull Project project, String text, @NotNull KtLiteralStringTemplateEntry entry) {
+        String key = Messages.showInputDialog(project, "String$length() is to long.(not include feature id)", "Alert", Messages.getQuestionIcon());
+        if (key != null) {
+            work1(project, text, key, entry);
+        }
+    }
+
+    private void work(@NotNull Project project, String text, @NotNull KtLiteralStringTemplateEntry entry) {
+        mainViewModel.key.setData(text);
+        String key = mainViewModel.start();
+        workDetail(project, entry, key);
+    }
+
+    private void work1(@NotNull Project project, String text, String k, @NotNull KtLiteralStringTemplateEntry entry) {
+        mainViewModel.key.setData(text);
+        String key = mainViewModel.start(k);
+        workDetail(project, entry, key);
+    }
+
+    private void workDetail(@NotNull Project project, @NotNull KtLiteralStringTemplateEntry entry, String key) {
+        if (key.trim().length() == 0) return;
+        String stringResource = "getString(" + key + ")";
+        PsiStatement statementFromText = new PsiElementFactoryImpl(project).createStatementFromText(stringResource, entry);
+        entry.getParent().replace(statementFromText);
     }
 }

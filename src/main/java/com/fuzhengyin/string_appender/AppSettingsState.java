@@ -23,6 +23,21 @@ public class AppSettingsState implements PersistentStateComponent<AppSettingsSta
 
     public String xmlPath;
     public String featureId;
+    public String featureScriptPath;
+    public int featureProduceType;
+    /**
+     * 1 max word
+     * 2 max length
+     */
+    public int maxWordType;
+    public int maxWord;
+    public int maxLength;
+
+    public static final int max_word_type_word = 1;
+    public static final int max_word_type_length = 2;
+    public static final int feature_id_type_fixed_string = 1;
+    public static final int feature_id_type_script_produce = 2;
+    public String pythonPath;
 
     public static AppSettingsState getInstance() {
         return ApplicationManager.getApplication().getService(AppSettingsState.class);

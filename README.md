@@ -17,9 +17,24 @@ getString(R.string.xxxx)
 可以通过在设置中指定xml 文件位置和feature id
 路径：Android Studio / Preferences / Tools / Extract To Special Xml
 
-todo：
+可以通过指定python 的方式，动态获取feature id。标准：
+>可以接受一个参数，参数的内容是项目的地址\
+结果需要通过打印到控制台的方式返回
 
-1. 通过python 或者javascript 提供自定义字符串键的功能
+比如：
+
+```python
+# coding=utf-8
+import sys
+
+from git import Repo
+
+path = "."
+if len(sys.argv) > 1:
+    path = sys.argv[1]
+repo = Repo(path)
+print(repo.active_branch.name)
+```
 
 ## build
 

@@ -2,9 +2,7 @@
 
 package com.fuzhengyin.string_appender;
 
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
-import com.intellij.util.ui.FormBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -15,15 +13,15 @@ import javax.swing.*;
 public class AppSettingsComponent {
 
     private final JPanel myMainPanel;
-    private final JBTextField xmlPathText = new JBTextField();
-    private final JBTextField featureIdText = new JBTextField();
+    private final JBTextField xmlPathText;
+    private final JBTextField featureIdText;
+    private final AppSettingsPanel appSettingsPanel;
 
     public AppSettingsComponent() {
-        myMainPanel = FormBuilder.createFormBuilder()
-                .addLabeledComponent(new JBLabel("xml path"), xmlPathText, 1, false)
-                .addLabeledComponent(new JBLabel("featureId"),featureIdText, 1)
-                .addComponentFillVertically(new JPanel(), 0)
-                .getPanel();
+        appSettingsPanel = new AppSettingsPanel();
+        myMainPanel = appSettingsPanel.contentPanel;
+        xmlPathText = appSettingsPanel.xmlPath;
+        featureIdText = appSettingsPanel.featuredId;
     }
 
     public JPanel getPanel() {
@@ -39,7 +37,7 @@ public class AppSettingsComponent {
         return xmlPathText.getText();
     }
 
-    public void xmlPath(@NotNull String newText) {
+    public void setXmlPath(@NotNull String newText) {
         xmlPathText.setText(newText);
     }
 
@@ -47,8 +45,60 @@ public class AppSettingsComponent {
         return featureIdText.getText();
     }
 
-    public void featureId(String newStatus) {
+    public void setFeatureId(String newStatus) {
         featureIdText.setText(newStatus);
     }
 
+    public int getMaxWordType() {
+        return appSettingsPanel.maxWordType();
+    }
+
+    public String getFeatureScriptPath() {
+        return appSettingsPanel.featureScriptPath.getText();
+    }
+
+    public int getMaxWord() {
+        return (int) appSettingsPanel.spinnerMaxWord.getValue();
+    }
+
+    public void setMaxWord(int word) {
+        appSettingsPanel.spinnerMaxWord.setValue(word);
+        appSettingsPanel.spinnerMaxLength.setValue(word);
+    }
+
+    public void setMaxWordType(int type) {
+        appSettingsPanel.setMaxWordType(type);
+    }
+
+    public int getMaxLength() {
+        return (int) appSettingsPanel.spinnerMaxLength.getValue();
+    }
+
+    public void setMaxLength(int length) {
+        appSettingsPanel.spinnerMaxLength.setValue(length);
+    }
+
+    public int getFeatureIdType() {
+        return appSettingsPanel.featureId();
+    }
+
+    public void setFeatureIdType(int type) {
+        appSettingsPanel.setFeatureIdType(type);
+    }
+
+    public String getFeatureIdScriptPath() {
+        return appSettingsPanel.featureScriptPath.getText();
+    }
+
+    public void setFeatureIdScriptPath(String path) {
+        appSettingsPanel.featureScriptPath.setText(path);
+    }
+
+    public String getPythonPath() {
+        return appSettingsPanel.pythonPath.getText();
+    }
+
+    public void setPythonPath(String pythonPath) {
+        appSettingsPanel.pythonPath.setText(pythonPath);
+    }
 }
