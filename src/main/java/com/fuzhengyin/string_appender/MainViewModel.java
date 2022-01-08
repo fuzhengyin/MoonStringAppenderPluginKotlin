@@ -17,12 +17,14 @@ public class MainViewModel {
     public void loadLast() {
 
     }
+
     public String start() {
         String data = key.getData();
         if (data == null || data.isEmpty()) return "";
         String stringKey = trans(data);
         return start(stringKey);
     }
+
     public String start(String stringKey) {
         String moon = moonDest.getData();
         if (moon == null || moon.isEmpty()) return "";
@@ -30,6 +32,7 @@ public class MainViewModel {
         if (feature == null || feature.isEmpty()) return "";
         String data = key.getData();
         if (data == null || data.isEmpty()) return "";
+        if (data.contains("\n")) data = "\"" + data + "\"";
         String format = String.format("<string name=\"%s_%s\">%s</string>", feature, stringKey, data);
         System.out.println(format);
         try {
@@ -41,8 +44,9 @@ public class MainViewModel {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "R.string."+feature+"_"+ stringKey;
+        return "R.string." + feature + "_" + stringKey;
     }
+
     public String trans(String origin) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < origin.length(); i++) {
@@ -54,7 +58,7 @@ public class MainViewModel {
                     continue;
                 }
                 if (c >= 'A' && c <= 'Z') {
-                    stringBuilder.append((char) (c - ('A'-'a')));
+                    stringBuilder.append((char) (c - ('A' - 'a')));
                 } else {
                     stringBuilder.append(c);
                 }
