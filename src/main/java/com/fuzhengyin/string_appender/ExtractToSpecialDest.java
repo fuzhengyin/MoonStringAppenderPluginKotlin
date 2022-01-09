@@ -56,18 +56,17 @@ public class ExtractToSpecialDest extends AbstractKotlinInspection {
                         String text = entry.getText();
                         AppSettingsState instance = AppSettingsState.getInstance();
                         String xmlPath = instance.xmlPath;
-                        String featureId = getFeatureId(project, instance);
+                        getFeatureId(project, instance, mainViewModel);
                         if (xmlPath == null || !new File(xmlPath).exists()) {
                             Messages.showMessageDialog("Can't process", "xml " + xmlPath + " not exists", Messages.getErrorIcon());
                             return;
                         }
-                        if (featureId == null || featureId.trim().isEmpty()) {
+                        String prefix = mainViewModel.prefix.value;
+                        if (prefix == null || prefix.trim().isEmpty()) {
                             Messages.showMessageDialog("Can't process", "FeatureId not Exists", Messages.getErrorIcon());
                             return;
                         }
-                        mainViewModel.moonDest.setData(xmlPath);
-                        mainViewModel.featureId.setData(featureId);
-
+                        mainViewModel.moonDest.setValue(xmlPath);
                         String trans = mainViewModel.trans(text);
                         if (instance.maxWordType == AppSettingsState.max_word_type_word) {
                             if (instance.maxWord != 0) {
@@ -93,9 +92,10 @@ public class ExtractToSpecialDest extends AbstractKotlinInspection {
         };
     }
 
-    private String getFeatureId(@NotNull Project project, AppSettingsState instance) {
-        if (instance.featureProduceType == AppSettingsState.feature_id_type_fixed_string) {
-            return instance.featureId;
+    private void getFeatureId(@NotNull Project project, AppSettingsState instance, MainViewModel mainViewModel) {
+        if (instance.fixProduceType == AppSettingsState.feature_id_type_fixed_string) {
+            mainViewModel.prefix.setValue(instance.prefix);
+            mainViewModel.suffix.setValue(instance.suffix);
         }
         Process process = null;
         InputStream inputStream = null;
@@ -106,15 +106,16 @@ public class ExtractToSpecialDest extends AbstractKotlinInspection {
             if (instance.pythonPath != null && instance.pythonPath.length() > 0) {
                 pythonPath = instance.pythonPath;
             } else pythonPath = "python";
-            process = Runtime.getRuntime().exec(new String[]{pythonPath, instance.featureScriptPath, basePath});
+            process = Runtime.getRuntime().exec(new String[]{pythonPath, instance.fixProduceScriptPath, basePath});
             int i = process.waitFor();
             if (i == 0) {
                 inputStream = process.getInputStream();
                 bufferedInputStream = new BufferedInputStream(inputStream);
                 byte[] bytes = bufferedInputStream.readAllBytes();
-                return new String(bytes).trim();
+                String[] split = new String(bytes).trim().split("/");
+                mainViewModel.prefix.setValue(split[0]);
+                mainViewModel.suffix.setValue(split[1]);
             }
-            return instance.featureId;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         } finally {
@@ -136,7 +137,8 @@ public class ExtractToSpecialDest extends AbstractKotlinInspection {
                 process.destroy();
             }
         }
-        return instance.featureId;
+        mainViewModel.prefix.setValue(instance.prefix);
+        mainViewModel.suffix.setValue(instance.suffix);
     }
 
     private void diy(@NotNull Project project, String text, @NotNull KtLiteralStringTemplateEntry entry) {
@@ -147,13 +149,13 @@ public class ExtractToSpecialDest extends AbstractKotlinInspection {
     }
 
     private void work(@NotNull Project project, String text, @NotNull KtLiteralStringTemplateEntry entry) {
-        mainViewModel.key.setData(text);
+        mainViewModel.key.setValue(text);
         String key = mainViewModel.start();
         workDetail(project, entry, key);
     }
 
     private void work1(@NotNull Project project, String text, String k, @NotNull KtLiteralStringTemplateEntry entry) {
-        mainViewModel.key.setData(text);
+        mainViewModel.key.setValue(text);
         String key = mainViewModel.start(k);
         workDetail(project, entry, key);
     }

@@ -22,9 +22,9 @@ import org.jetbrains.annotations.Nullable;
 public class AppSettingsState implements PersistentStateComponent<AppSettingsState> {
 
     public String xmlPath;
-    public String featureId;
-    public String featureScriptPath;
-    public int featureProduceType;
+    public String prefix;
+    public String fixProduceScriptPath;
+    public int fixProduceType;
     /**
      * 1 max word
      * 2 max length
@@ -38,6 +38,7 @@ public class AppSettingsState implements PersistentStateComponent<AppSettingsSta
     public static final int feature_id_type_fixed_string = 1;
     public static final int feature_id_type_script_produce = 2;
     public String pythonPath;
+    public String suffix;
 
     public static AppSettingsState getInstance() {
         return ApplicationManager.getApplication().getService(AppSettingsState.class);

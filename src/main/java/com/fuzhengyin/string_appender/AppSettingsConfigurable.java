@@ -40,13 +40,14 @@ public class AppSettingsConfigurable implements Configurable {
     public boolean isModified() {
         AppSettingsState settings = AppSettingsState.getInstance();
         boolean modified = !mySettingsComponent.getXmlPath().equals(settings.xmlPath);
-        modified |= !mySettingsComponent.getFeatureId().equals(settings.featureId);
-        modified |= !mySettingsComponent.getFeatureIdScriptPath().equals(settings.featureScriptPath);
-        modified |= mySettingsComponent.getFeatureIdType() != settings.featureProduceType;
+        modified |= !mySettingsComponent.getPrefix().equals(settings.prefix);
+        modified |= !mySettingsComponent.getFeatureIdScriptPath().equals(settings.fixProduceScriptPath);
+        modified |= mySettingsComponent.getFixProduceType() != settings.fixProduceType;
         modified |= mySettingsComponent.getMaxWordType() != settings.maxWordType;
         modified |= mySettingsComponent.getMaxWord() != settings.maxWord;
         modified |= mySettingsComponent.getMaxLength() != settings.maxLength;
         modified |= !mySettingsComponent.getPythonPath().equals(settings.pythonPath);
+        modified |= !mySettingsComponent.getSuffix().equals(settings.suffix);
         return modified;
     }
 
@@ -54,26 +55,28 @@ public class AppSettingsConfigurable implements Configurable {
     public void apply() {
         AppSettingsState settings = AppSettingsState.getInstance();
         settings.xmlPath = mySettingsComponent.getXmlPath();
-        settings.featureId = mySettingsComponent.getFeatureId();
-        settings.featureProduceType = mySettingsComponent.getFeatureIdType();
-        settings.featureScriptPath = mySettingsComponent.getFeatureScriptPath();
+        settings.prefix = mySettingsComponent.getPrefix();
+        settings.fixProduceType = mySettingsComponent.getFixProduceType();
+        settings.fixProduceScriptPath = mySettingsComponent.getFeatureScriptPath();
         settings.maxWordType = mySettingsComponent.getMaxWordType();
         settings.maxWord = mySettingsComponent.getMaxWord();
         settings.maxLength = mySettingsComponent.getMaxLength();
         settings.pythonPath = mySettingsComponent.getPythonPath();
+        settings.suffix = mySettingsComponent.getSuffix();
     }
 
     @Override
     public void reset() {
         AppSettingsState settings = AppSettingsState.getInstance();
         mySettingsComponent.setXmlPath(settings.xmlPath);
-        mySettingsComponent.setFeatureId(settings.featureId);
-        mySettingsComponent.setFeatureIdType(settings.featureProduceType);
-        mySettingsComponent.setFeatureIdScriptPath(settings.featureScriptPath);
-        mySettingsComponent.setMaxWord(settings.maxWord);
-        mySettingsComponent.setMaxWordType(settings.maxWordType);
-        mySettingsComponent.setMaxLength(settings.maxLength);
+        mySettingsComponent.setPrefix(settings.prefix);
+        mySettingsComponent.setFixProduceType(settings.fixProduceType);
+        mySettingsComponent.setFixProduceScriptPath(settings.fixProduceScriptPath);
         mySettingsComponent.setPythonPath(settings.pythonPath);
+        mySettingsComponent.setKeyRestrictType(settings.maxWordType);
+        mySettingsComponent.setMaxWord(settings.maxWord);
+        mySettingsComponent.setMaxLength(settings.maxLength);
+        mySettingsComponent.setSuffix(settings.suffix);
     }
 
     @Override

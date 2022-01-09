@@ -1,5 +1,9 @@
 package com.fuzhengyin.string_appender;
 
+import com.intellij.ui.JBIntSpinner;
+import com.intellij.ui.components.JBOptionButton;
+import com.intellij.ui.components.JBOptionButtonKt;
+import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBTextField;
 
 import javax.swing.*;
@@ -9,18 +13,19 @@ import java.io.File;
 
 public class AppSettingsPanel {
     JBTextField xmlPath;
-    JBTextField featuredId;
+    JBTextField prefixTextField;
     JPanel contentPanel;
-    JTextField featureScriptPath;
-    JRadioButton scriptRadioButton;
+    JBTextField featureScriptPath;
+    JBRadioButton scriptRadioButton;
     JButton selectXmlPath;
     JButton selectScriptPath;
-    JRadioButton maxWordCountRadioButton;
-    JSpinner spinnerMaxLength;
-    JSpinner spinnerMaxWord;
-    JRadioButton maxLengthRadioButton;
-    JRadioButton fixedString;
-    JTextField pythonPath;
+    JBRadioButton maxWordCountRadioButton;
+    JBIntSpinner spinnerMaxLength;
+    JBIntSpinner spinnerMaxWord;
+    JBRadioButton maxLengthRadioButton;
+    JBRadioButton fixedString;
+    JBTextField pythonPath;
+    JBTextField suffixTextField;
 
     public AppSettingsPanel() {
 
@@ -39,13 +44,15 @@ public class AppSettingsPanel {
         scriptRadioButton.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 featureScriptPath.setEnabled(true);
-                featuredId.setEnabled(false);
+                prefixTextField.setEnabled(false);
+                suffixTextField.setEnabled(false);
             }
         });
         fixedString.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 featureScriptPath.setEnabled(false);
-                featuredId.setEnabled(true);
+                prefixTextField.setEnabled(true);
+                suffixTextField.setEnabled(true);
             }
         });
         selectXmlPath.addActionListener(e -> {
@@ -87,15 +94,16 @@ public class AppSettingsPanel {
     }
 
     private void createUIComponents() {
-
+        spinnerMaxLength = new JBIntSpinner(0, 0, 100);
+        spinnerMaxWord = new JBIntSpinner(0, 0, 100);
     }
 
-    int maxWordType() {
+    int keyRestrictType() {
         if (maxWordCountRadioButton.isSelected()) return AppSettingsState.max_word_type_word;
         else return AppSettingsState.max_word_type_length;
     }
 
-    public void setMaxWordType(int type) {
+    public void setKeyRestrictType(int type) {
         if (type == AppSettingsState.max_word_type_word) {
             maxWordCountRadioButton.setSelected(true);
         } else {
@@ -103,12 +111,12 @@ public class AppSettingsPanel {
         }
     }
 
-    int featureId() {
+    int fixProduceType() {
         if (fixedString.isSelected()) return AppSettingsState.feature_id_type_fixed_string;
         else return AppSettingsState.feature_id_type_script_produce;
     }
 
-    public void setFeatureIdType(int type) {
+    public void setFixProduceType(int type) {
         if (type == AppSettingsState.feature_id_type_fixed_string) {
             fixedString.setSelected(true);
         } else {

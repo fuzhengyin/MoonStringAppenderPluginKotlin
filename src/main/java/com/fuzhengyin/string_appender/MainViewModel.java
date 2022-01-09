@@ -5,13 +5,15 @@ import java.io.RandomAccessFile;
 
 public class MainViewModel {
     ObservableData<String> moonDest;
-    ObservableData<String> featureId;
+    ObservableData<String> prefix;
+    ObservableData<String> suffix;
     ObservableData<String> key;
 
     MainViewModel() {
         moonDest = new ObservableData<>();
-        featureId = new ObservableData<>();
+        prefix = new ObservableData<>();
         key = new ObservableData<>();
+        suffix = new ObservableData<>();
     }
 
     public void loadLast() {
@@ -19,21 +21,27 @@ public class MainViewModel {
     }
 
     public String start() {
-        String data = key.getData();
+        String data = key.getValue();
         if (data == null || data.isEmpty()) return "";
         String stringKey = trans(data);
         return start(stringKey);
     }
 
     public String start(String stringKey) {
-        String moon = moonDest.getData();
+        String moon = moonDest.getValue();
         if (moon == null || moon.isEmpty()) return "";
-        String feature = featureId.getData();
-        if (feature == null || feature.isEmpty()) return "";
-        String data = key.getData();
+        String prefix = this.prefix.getValue();
+        if (prefix == null || prefix.isEmpty()) return "";
+        String suffix = this.suffix.getValue();
+        if (suffix != null && !suffix.trim().isEmpty()) {
+            suffix = "_" + suffix;
+        } else {
+            suffix = "";
+        }
+        String data = key.getValue();
         if (data == null || data.isEmpty()) return "";
         if (data.contains("\n")) data = "\"" + data + "\"";
-        String format = String.format("<string name=\"%s_%s\">%s</string>", feature, stringKey, data);
+        String format = String.format("<string name=\"%s_%s%s\">%s</string>", prefix, stringKey, suffix, data);
         System.out.println(format);
         try {
             RandomAccessFile randomAccessFile = new RandomAccessFile(moon, "rw");
@@ -44,7 +52,7 @@ public class MainViewModel {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "R.string." + feature + "_" + stringKey;
+        return "R.string." + prefix + "_" + stringKey;
     }
 
     public String trans(String origin) {
@@ -70,13 +78,13 @@ public class MainViewModel {
 }
 
 class ObservableData<T> {
-    T data;
+    T value;
 
-    public T getData() {
-        return data;
+    public T getValue() {
+        return value;
     }
 
-    public void setData(T data) {
-        this.data = data;
+    public void setValue(T value) {
+        this.value = value;
     }
 }

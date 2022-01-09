@@ -1,3 +1,5 @@
+import java.util.function.Consumer
+
 plugins {
     id 'org.jetbrains.intellij' version '1.3.0'
     id 'java'
@@ -21,9 +23,12 @@ intellij {
     plugins = ['org.jetbrains.kotlin','java']
     updateSinceUntilBuild = false
 }
+
 patchPluginXml {
-    sinceBuild = '203.1'
-    untilBuild = '203.*'
+    if (!gradle.startParameter.taskNames.contains(":runIde")) {
+        sinceBuild = '203.1'
+        untilBuild = '203.*'
+    }
     changeNotes = """
       Add change notes here.<br>
       <em>most HTML tags may be used</em>"""

@@ -21,7 +21,7 @@ public class AppSettingsComponent {
         appSettingsPanel = new AppSettingsPanel();
         myMainPanel = appSettingsPanel.contentPanel;
         xmlPathText = appSettingsPanel.xmlPath;
-        featureIdText = appSettingsPanel.featuredId;
+        featureIdText = appSettingsPanel.prefixTextField;
     }
 
     public JPanel getPanel() {
@@ -41,16 +41,16 @@ public class AppSettingsComponent {
         xmlPathText.setText(newText);
     }
 
-    public String getFeatureId() {
+    public String getPrefix() {
         return featureIdText.getText();
     }
 
-    public void setFeatureId(String newStatus) {
+    public void setPrefix(String newStatus) {
         featureIdText.setText(newStatus);
     }
 
     public int getMaxWordType() {
-        return appSettingsPanel.maxWordType();
+        return appSettingsPanel.keyRestrictType();
     }
 
     public String getFeatureScriptPath() {
@@ -63,11 +63,10 @@ public class AppSettingsComponent {
 
     public void setMaxWord(int word) {
         appSettingsPanel.spinnerMaxWord.setValue(word);
-        appSettingsPanel.spinnerMaxLength.setValue(word);
     }
 
-    public void setMaxWordType(int type) {
-        appSettingsPanel.setMaxWordType(type);
+    public void setKeyRestrictType(int type) {
+        appSettingsPanel.setKeyRestrictType(type);
     }
 
     public int getMaxLength() {
@@ -78,19 +77,19 @@ public class AppSettingsComponent {
         appSettingsPanel.spinnerMaxLength.setValue(length);
     }
 
-    public int getFeatureIdType() {
-        return appSettingsPanel.featureId();
+    public int getFixProduceType() {
+        return appSettingsPanel.fixProduceType();
     }
 
-    public void setFeatureIdType(int type) {
-        appSettingsPanel.setFeatureIdType(type);
+    public void setFixProduceType(int type) {
+        appSettingsPanel.setFixProduceType(type);
     }
 
     public String getFeatureIdScriptPath() {
         return appSettingsPanel.featureScriptPath.getText();
     }
 
-    public void setFeatureIdScriptPath(String path) {
+    public void setFixProduceScriptPath(String path) {
         appSettingsPanel.featureScriptPath.setText(path);
     }
 
@@ -100,5 +99,13 @@ public class AppSettingsComponent {
 
     public void setPythonPath(String pythonPath) {
         appSettingsPanel.pythonPath.setText(pythonPath);
+    }
+
+    public String getSuffix() {
+        return appSettingsPanel.suffixTextField.getText();
+    }
+
+    public void setSuffix(String suffix) {
+        appSettingsPanel.suffixTextField.setText(suffix);
     }
 }
