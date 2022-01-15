@@ -56,16 +56,22 @@ public class ExtractToSpecialDest extends AbstractKotlinInspection {
                         String text = entry.getText();
                         AppSettingsState instance = AppSettingsState.getInstance();
                         String xmlPath = instance.xmlPath;
-                        getFeatureId(project, instance, mainViewModel);
+                        if (instance.fixProduceType == AppSettingsState.feature_id_type_script_produce && (instance.fixProduceScriptPath == null || instance.fixProduceScriptPath.trim().length() == 0)) {
+                            Messages.showMessageDialog("Can't process", "Python Script not Defined", Messages.getErrorIcon());
+                            return;
+                        }
                         if (xmlPath == null || !new File(xmlPath).exists()) {
                             Messages.showMessageDialog("Can't process", "xml " + xmlPath + " not exists", Messages.getErrorIcon());
                             return;
                         }
+                        extractFeatureId(project, instance, mainViewModel);
+
                         String prefix = mainViewModel.prefix.value;
                         if (prefix == null || prefix.trim().isEmpty()) {
-                            Messages.showMessageDialog("Can't process", "FeatureId not Exists", Messages.getErrorIcon());
+                            Messages.showMessageDialog("Can't process", "Prefix not Defined", Messages.getErrorIcon());
                             return;
                         }
+
                         mainViewModel.moonDest.setValue(xmlPath);
                         String trans = mainViewModel.trans(text);
                         if (instance.maxWordType == AppSettingsState.max_word_type_word) {
@@ -92,10 +98,11 @@ public class ExtractToSpecialDest extends AbstractKotlinInspection {
         };
     }
 
-    private void getFeatureId(@NotNull Project project, AppSettingsState instance, MainViewModel mainViewModel) {
+    private void extractFeatureId(@NotNull Project project, AppSettingsState instance, MainViewModel mainViewModel) {
         if (instance.fixProduceType == AppSettingsState.feature_id_type_fixed_string) {
             mainViewModel.prefix.setValue(instance.prefix);
             mainViewModel.suffix.setValue(instance.suffix);
+            return;
         }
         Process process = null;
         InputStream inputStream = null;
@@ -113,8 +120,14 @@ public class ExtractToSpecialDest extends AbstractKotlinInspection {
                 bufferedInputStream = new BufferedInputStream(inputStream);
                 byte[] bytes = bufferedInputStream.readAllBytes();
                 String[] split = new String(bytes).trim().split("/");
-                mainViewModel.prefix.setValue(split[0]);
-                mainViewModel.suffix.setValue(split[1]);
+                if (split.length == 1) {
+                    mainViewModel.prefix.setValue(split[0]);
+                    mainViewModel.suffix.setValue("");
+                } else {
+                    mainViewModel.prefix.setValue(split[0]);
+                    mainViewModel.suffix.setValue(split[1]);
+                }
+                return;
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

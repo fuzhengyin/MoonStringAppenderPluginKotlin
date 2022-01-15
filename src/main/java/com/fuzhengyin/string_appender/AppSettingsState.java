@@ -33,10 +33,10 @@ public class AppSettingsState implements PersistentStateComponent<AppSettingsSta
     public int maxWord;
     public int maxLength;
 
-    public static final int max_word_type_word = 1;
-    public static final int max_word_type_length = 2;
-    public static final int feature_id_type_fixed_string = 1;
-    public static final int feature_id_type_script_produce = 2;
+    public static final int max_word_type_word = 0;
+    public static final int max_word_type_length = 1;
+    public static final int feature_id_type_fixed_string = 0;
+    public static final int feature_id_type_script_produce = 1;
     public String pythonPath;
     public String suffix;
 
